@@ -1,0 +1,619 @@
+[
+    {
+        "id": "tab_hvac_dashboard",
+        "type": "tab",
+        "label": "HVAC Energy Optimization",
+        "disabled": false,
+        "info": "Smart Building Automation & HVAC Energy Analytics Flow"
+    },
+    {
+        "id": "ui_tab_main",
+        "type": "ui_tab",
+        "name": "HVAC Energy Optimization",
+        "icon": "dashboard",
+        "order": 1
+    },
+    {
+        "id": "ui_base_theme",
+        "type": "ui_base",
+        "theme": {
+            "name": "theme-dark",
+            "lightTheme": {
+                "default": "#0094CE",
+                "baseColor": "#0094CE",
+                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif",
+                "edited": true
+            },
+            "darkTheme": {
+                "default": "#097479",
+                "baseColor": "#00ADB5",
+                "baseFont": "Segoe UI, Roboto, Helvetica, Arial, sans-serif",
+                "edited": true
+            },
+            "customTheme": {
+                "name": "Unthemed",
+                "default": "#4B7930",
+                "baseColor": "#4B7930",
+                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif"
+            },
+            "themeState": {
+                "base-color": {
+                    "default": "#097479",
+                    "value": "#00ADB5",
+                    "edited": true
+                },
+                "page-titlebar-backgroundColor": {
+                    "value": "#222831",
+                    "edited": false
+                },
+                "page-backgroundColor": {
+                    "value": "#181A1B",
+                    "edited": false
+                },
+                "group-backgroundColor": {
+                    "value": "#222831",
+                    "edited": false
+                },
+                "widget-textColor": {
+                    "value": "#EEEEEE",
+                    "edited": false
+                },
+                "widget-backgroundColor": {
+                    "value": "#393E46",
+                    "edited": false
+                },
+                "group-textColor": {
+                    "value": "#10cfd8",
+                    "edited": false
+                },
+                "group-borderColor": {
+                    "value": "#555555",
+                    "edited": false
+                },
+                "page-sidebar-backgroundColor": {
+                    "value": "#333333",
+                    "edited": false
+                },
+                "base-font": {
+                    "value": "Segoe UI, Roboto, Helvetica, Arial, sans-serif"
+                }
+            },
+            "angularTheme": {
+                "primary": "cyan",
+                "accents": "light-blue",
+                "warn": "red",
+                "background": "grey"
+            }
+        },
+        "site": {
+            "name": "Smart Building IoT Management",
+            "hideToolbar": "false",
+            "allowSwipe": "false",
+            "lockMenu": "false",
+            "allowTempTheme": "true",
+            "dateFormat": "DD/MM/YYYY",
+            "sizes": {
+                "sx": 48,
+                "sy": 48,
+                "gx": 6,
+                "gy": 6,
+                "cx": 6,
+                "cy": 6,
+                "px": 0,
+                "py": 0
+            }
+        }
+    },
+    {
+        "id": "ui_group_env",
+        "type": "ui_group",
+        "name": "Real-Time Indoor Environment",
+        "tab": "ui_tab_main",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "ui_group_power",
+        "type": "ui_group",
+        "name": "Electrical & Power Monitoring",
+        "tab": "ui_tab_main",
+        "order": 2,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "ui_group_ai_rec",
+        "type": "ui_group",
+        "name": "AI Optimization Directives",
+        "tab": "ui_tab_main",
+        "order": 3,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "ui_group_savings",
+        "type": "ui_group",
+        "name": "Energy Conservation & Comparison",
+        "tab": "ui_tab_main",
+        "order": 4,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "mqtt_broker_local",
+        "type": "mqtt-broker",
+        "name": "Local Mosquitto Broker",
+        "broker": "localhost",
+        "port": "1883",
+        "clientid": "NodeRed_HVAC_Dashboard",
+        "autoConnect": true,
+        "usetls": false,
+        "compatmode": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": ""
+    },
+    {
+        "id": "mqtt_sub_recommendations",
+        "type": "mqtt in",
+        "z": "tab_hvac_dashboard",
+        "name": "MQTT Sub Recommendations",
+        "topic": "building/hvac/recommendations",
+        "qos": "0",
+        "datatype": "json",
+        "broker": "mqtt_broker_local",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 170,
+        "y": 280,
+        "wires": [
+            [
+                "fn_split_recommendations"
+            ]
+        ]
+    },
+    {
+        "id": "fn_split_recommendations",
+        "type": "function",
+        "z": "tab_hvac_dashboard",
+        "name": "Route Optimization Telemetry",
+        "func": "var d = msg.payload;\n\nreturn [\n    { payload: d.indoor_temperature },\n    { payload: d.humidity },\n    { payload: d.co2_ppm },\n    { payload: d.occupancy },\n    { payload: d.realtime_power_w },\n    { payload: 'Voltage: ' + d.voltage + ' V | Current: ' + d.current + ' A' },\n    { payload: d.cumulative_energy_kwh + ' kWh' },\n    { payload: d.recommended_setpoint + ' °C' },\n    { payload: d.recommended_fan_speed },\n    { payload: d.optimization_mode },\n    { payload: d.justification },\n    { payload: d.savings_percentage },\n    { payload: d.power_saved_w + ' W' },\n    { payload: '$' + d.cost_saved_usd },\n    { topic: 'Baseline Fixed 21C', payload: d.baseline_power_w },\n    { topic: 'AI Optimized Setpoint', payload: d.predicted_power_w },\n    { payload: d.outdoor_temperature + ' °C' },\n    { payload: d.iaq_status }\n];",
+        "outputs": 18,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 460,
+        "y": 280,
+        "wires": [
+            [
+                "gauge_temp"
+            ],
+            [
+                "gauge_humidity"
+            ],
+            [
+                "gauge_co2"
+            ],
+            [
+                "template_occupancy"
+            ],
+            [
+                "gauge_power"
+            ],
+            [
+                "text_volts_amps"
+            ],
+            [
+                "text_energy"
+            ],
+            [
+                "text_rec_setpoint"
+            ],
+            [
+                "text_rec_fan"
+            ],
+            [
+                "text_opt_mode"
+            ],
+            [
+                "template_justification"
+            ],
+            [
+                "gauge_savings_pct"
+            ],
+            [
+                "text_power_saved"
+            ],
+            [
+                "text_cost_saved"
+            ],
+            [
+                "chart_before_after"
+            ],
+            [
+                "chart_before_after"
+            ],
+            [
+                "text_outdoor_temp"
+            ],
+            [
+                "text_iaq_alert"
+            ]
+        ]
+    },
+    {
+        "id": "gauge_temp",
+        "type": "ui_gauge",
+        "z": "tab_hvac_dashboard",
+        "name": "Temperature Gauge",
+        "group": "ui_group_env",
+        "order": 1,
+        "width": 3,
+        "height": 3,
+        "gtype": "gage",
+        "title": "Indoor Temp",
+        "label": "°C",
+        "format": "{{value}}",
+        "min": "16",
+        "max": "38",
+        "colors": [
+            "#00B4D8",
+            "#06D6A0",
+            "#EF476F"
+        ],
+        "seg1": "22",
+        "seg2": "27",
+        "x": 780,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "gauge_humidity",
+        "type": "ui_gauge",
+        "z": "tab_hvac_dashboard",
+        "name": "Humidity Gauge",
+        "group": "ui_group_env",
+        "order": 2,
+        "width": 3,
+        "height": 3,
+        "gtype": "gage",
+        "title": "Humidity",
+        "label": "% RH",
+        "format": "{{value}}",
+        "min": "20",
+        "max": "90",
+        "colors": [
+            "#FFD166",
+            "#06D6A0",
+            "#118AB2"
+        ],
+        "seg1": "40",
+        "seg2": "65",
+        "x": 770,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "gauge_co2",
+        "type": "ui_gauge",
+        "z": "tab_hvac_dashboard",
+        "name": "CO2 Air Quality",
+        "group": "ui_group_env",
+        "order": 3,
+        "width": 3,
+        "height": 3,
+        "gtype": "gage",
+        "title": "CO2 Concentration",
+        "label": "PPM",
+        "format": "{{value}}",
+        "min": "400",
+        "max": "2000",
+        "colors": [
+            "#06D6A0",
+            "#FFD166",
+            "#EF476F"
+        ],
+        "seg1": "800",
+        "seg2": "1000",
+        "x": 770,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "template_occupancy",
+        "type": "ui_template",
+        "z": "tab_hvac_dashboard",
+        "group": "ui_group_env",
+        "name": "Occupancy Card",
+        "order": 4,
+        "width": 3,
+        "height": 3,
+        "format": "<div style=\"text-align:center; padding:12px; background-color:#2b3038; border-radius:8px;\">\n  <div style=\"font-size:12px; color:#aaa; margin-bottom:6px;\">PIR OCCUPANCY</div>\n  <div ng-if=\"msg.payload == 'OCCUPIED'\" style=\"font-size:18px; font-weight:bold; color:#06D6A0;\">\n    <i class=\"fa fa-user\"></i> OCCUPIED\n  </div>\n  <div ng-if=\"msg.payload != 'OCCUPIED'\" style=\"font-size:18px; font-weight:bold; color:#888;\">\n    <i class=\"fa fa-user-times\"></i> UNOCCUPIED\n  </div>\n</div>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "x": 780,
+        "y": 200,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "gauge_power",
+        "type": "ui_gauge",
+        "z": "tab_hvac_dashboard",
+        "name": "HVAC Power Gauge",
+        "group": "ui_group_power",
+        "order": 1,
+        "width": 6,
+        "height": 3,
+        "gtype": "gage",
+        "title": "Real-Time Power Demand",
+        "label": "Watts",
+        "format": "{{value}}",
+        "min": "0",
+        "max": "3000",
+        "colors": [
+            "#06D6A0",
+            "#FFD166",
+            "#EF476F"
+        ],
+        "seg1": "1200",
+        "seg2": "2200",
+        "x": 790,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "text_volts_amps",
+        "type": "ui_text",
+        "z": "tab_hvac_dashboard",
+        "group": "ui_group_power",
+        "order": 2,
+        "width": 6,
+        "height": 1,
+        "name": "Mains Electrical",
+        "label": "Mains Telemetry",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "x": 770,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "text_energy",
+        "type": "ui_text",
+        "z": "tab_hvac_dashboard",
+        "group": "ui_group_power",
+        "order": 3,
+        "width": 6,
+        "height": 1,
+        "name": "Energy Cumulative",
+        "label": "Cumulative Energy",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "x": 780,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "text_rec_setpoint",
+        "type": "ui_text",
+        "z": "tab_hvac_dashboard",
+        "group": "ui_group_ai_rec",
+        "order": 1,
+        "width": 3,
+        "height": 1,
+        "name": "Optimal Setpoint",
+        "label": "Recommended Setpoint",
+        "format": "<span style=\"color:#00ADB5; font-weight:bold;\">{{msg.payload}}</span>",
+        "layout": "row-spread",
+        "x": 780,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "text_rec_fan",
+        "type": "ui_text",
+        "z": "tab_hvac_dashboard",
+        "group": "ui_group_ai_rec",
+        "order": 2,
+        "width": 3,
+        "height": 1,
+        "name": "Optimal Fan Speed",
+        "label": "Recommended Fan Speed",
+        "format": "<span style=\"color:#FFD166; font-weight:bold;\">{{msg.payload}}</span>",
+        "layout": "row-spread",
+        "x": 780,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "text_opt_mode",
+        "type": "ui_text",
+        "z": "tab_hvac_dashboard",
+        "group": "ui_group_ai_rec",
+        "order": 3,
+        "width": 6,
+        "height": 1,
+        "name": "Optimization Mode",
+        "label": "HVAC Operating Mode",
+        "format": "<span style=\"color:#06D6A0; font-weight:bold;\">{{msg.payload}}</span>",
+        "layout": "row-spread",
+        "x": 780,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "template_justification",
+        "type": "ui_template",
+        "z": "tab_hvac_dashboard",
+        "group": "ui_group_ai_rec",
+        "name": "Engineering Justification",
+        "order": 4,
+        "width": 6,
+        "height": 2,
+        "format": "<div style=\"padding:8px 12px; background-color:#2d333b; border-left:4px solid #00ADB5; border-radius:4px; font-size:13px; line-height:1.4;\">\n  <b style=\"color:#00ADB5;\"><i class=\"fa fa-info-circle\"></i> Decision Rationalization:</b><br>\n  <span>{{msg.payload}}</span>\n</div>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "x": 800,
+        "y": 480,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "gauge_savings_pct",
+        "type": "ui_gauge",
+        "z": "tab_hvac_dashboard",
+        "name": "Energy Savings Gauge",
+        "group": "ui_group_savings",
+        "order": 1,
+        "width": 3,
+        "height": 3,
+        "gtype": "gage",
+        "title": "Energy Reduction",
+        "label": "% Saved",
+        "format": "{{value}} %",
+        "min": "0",
+        "max": "60",
+        "colors": [
+            "#118AB2",
+            "#00ADB5",
+            "#06D6A0"
+        ],
+        "seg1": "20",
+        "seg2": "35",
+        "x": 790,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "text_power_saved",
+        "type": "ui_text",
+        "z": "tab_hvac_dashboard",
+        "group": "ui_group_savings",
+        "order": 2,
+        "width": 3,
+        "height": 1,
+        "name": "Power Curtailed",
+        "label": "Power Saved",
+        "format": "<span style=\"color:#06D6A0; font-weight:bold;\">{{msg.payload}}</span>",
+        "layout": "row-spread",
+        "x": 780,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "text_cost_saved",
+        "type": "ui_text",
+        "z": "tab_hvac_dashboard",
+        "group": "ui_group_savings",
+        "order": 3,
+        "width": 3,
+        "height": 1,
+        "name": "Estimated Cost Saved",
+        "label": "Cost Saved",
+        "format": "<span style=\"color:#FFD166; font-weight:bold;\">{{msg.payload}}</span>",
+        "layout": "row-spread",
+        "x": 790,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "chart_before_after",
+        "type": "ui_chart",
+        "z": "tab_hvac_dashboard",
+        "name": "Before vs After Power Chart",
+        "group": "ui_group_savings",
+        "order": 4,
+        "width": 6,
+        "height": 4,
+        "label": "HVAC Power Demand Comparison (Watts)",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "Awaiting Optimization Telemetry...",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "2600",
+        "removeOlder": "10",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#EF476F",
+            "#06D6A0",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "useOldStyle": false,
+        "outputs": 1,
+        "x": 810,
+        "y": 650,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "text_outdoor_temp",
+        "type": "ui_text",
+        "z": "tab_hvac_dashboard",
+        "group": "ui_group_env",
+        "order": 5,
+        "width": 6,
+        "height": 1,
+        "name": "Outdoor Temperature",
+        "label": "Outdoor Ambient Temp",
+        "format": "<span style=\"color:#FFD166; font-weight:bold;\">{{msg.payload}}</span>",
+        "layout": "row-spread",
+        "x": 780,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "text_iaq_alert",
+        "type": "ui_text",
+        "z": "tab_hvac_dashboard",
+        "group": "ui_group_ai_rec",
+        "order": 5,
+        "width": 6,
+        "height": 1,
+        "name": "Ventilation Alert",
+        "label": "Indoor Air Quality Alert",
+        "format": "<span ng-style=\"{'color': (msg.payload==='GOOD' ? '#06D6A0' : (msg.payload==='WARNING' ? '#FFD166' : '#EF476F')), 'font-weight': 'bold'}\"><i class=\"fa fa-warning\" ng-if=\"msg.payload!=='GOOD'\"></i> {{msg.payload}}</span>",
+        "layout": "row-spread",
+        "x": 800,
+        "y": 500,
+        "wires": []
+    }
+]
